@@ -12,13 +12,23 @@ package com.miapp.modelo;
 
 
 public abstract class Persona {
-
+    
+    private String apellido;
     private String nombre;
     protected int id;
 
-    public Persona(String nombre, int id) {
+    public Persona(String nombre, String apellido,int id) {
+        this.apellido= apellido;
         this.nombre = nombre;
         this.id = id;
+    }
+
+       public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
     }
 
     public String getNombre() {

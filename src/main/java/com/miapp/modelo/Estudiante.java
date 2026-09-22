@@ -10,11 +10,11 @@ import java.util.List;
 
 public class Estudiante extends Persona implements Inscribible {
 
-    private String apellido;
+
     private String carrera;
     private double promedio;
 
-    public static final int MAX_MATERIAS = 6;
+    public static final int MAX_MATERIAS = 7;
 
     private List<Curso> cursos;
 
@@ -24,9 +24,8 @@ public class Estudiante extends Persona implements Inscribible {
     public Estudiante(int id, String nombre, String apellido,
                       String carrera, double promedio) {
 
-        super(nombre, id);
-
-        this.apellido = apellido;
+        super(nombre,apellido, id);
+        
         this.carrera = carrera;
         this.promedio = promedio;
 
@@ -39,13 +38,6 @@ public class Estudiante extends Persona implements Inscribible {
         }
     }
 
-    public String getApellido() {
-        return apellido;
-    }
-
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
 
     public String getCarrera() {
         return carrera;
