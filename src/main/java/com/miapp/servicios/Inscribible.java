@@ -9,9 +9,6 @@ package com.miapp.servicios;
  * @author Estudiante
  */
 
-
-package com.miapp.servicios;
-
 import com.miapp.modelo.Curso;
 
 public interface Inscribible {
