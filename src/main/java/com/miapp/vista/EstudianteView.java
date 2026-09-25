@@ -2,13 +2,14 @@ package com.miapp.vista;
 
 import com.miapp.controlador.EstudianteController;
 import com.miapp.Utilidades.EstadoMatricula;
+
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.border.EmptyBorder;
-import javax.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.util.List;
+
 
 public class EstudianteView extends JFrame {
 
