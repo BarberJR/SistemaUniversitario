@@ -9,9 +9,10 @@ package com.miapp.servicios;
  * @author Estudiante
  */
 
+
 import com.miapp.modelo.Curso;
 
 public interface Inscribible {
-
+    
     boolean inscribir(Curso curso);
 }
