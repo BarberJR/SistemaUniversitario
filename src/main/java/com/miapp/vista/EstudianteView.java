@@ -11,37 +11,58 @@ import java.awt.*;
 import java.util.List;
 
 /**
- * Vista Swing del sistema. Solo se ocupa de mostrar información y capturar
- * acciones del usuario; las operaciones las coordina el controlador.
+ * Vista principal del sistema universitario.
+ * Se encarga de mostrar la información y recibir las acciones del usuario.
  */
 public class EstudianteView extends JFrame {
 
-    private static final Color AZUL = new Color(30, 64, 175);
-    private static final Color AZUL_CLARO = new Color(239, 246, 255);
-    private static final Color FONDO = new Color(245, 247, 250);
+    // =========================================================
+    // COLORES DEL SISTEMA
+    // =========================================================
+
+    private static final Color ROJO = new Color(170, 25, 25);
+    private static final Color ROJO_CLARO = new Color(252, 235, 235);
+
+    private static final Color NEGRO = new Color(25, 25, 25);
+    private static final Color NEGRO_CLARO = new Color(55, 55, 55);
+
+    private static final Color DORADO = new Color(212, 175, 55);
+    private static final Color DORADO_CLARO = new Color(250, 244, 220);
+
+    private static final Color FONDO = new Color(245, 245, 245);
     private static final Color BLANCO = Color.WHITE;
-    private static final Color TEXTO = new Color(31, 41, 55);
-    private static final Color SECUNDARIO = new Color(107, 114, 128);
-    private static final Color VERDE = new Color(22, 163, 74);
-    private static final Color NARANJA = new Color(234, 88, 12);
-    private static final Color ROJO = new Color(220, 38, 38);
+
+    private static final Color TEXTO = new Color(30, 30, 30);
+    private static final Color SECUNDARIO = new Color(100, 100, 100);
+
+    private static final Color BORDE = new Color(220, 220, 220);
+
+    // =========================================================
+    // COMPONENTES
+    // =========================================================
 
     private final JTextField txtBuscar;
+
     private final JComboBox<String> cmbCarrera;
     private final JComboBox<String> cmbEstado;
     private final JComboBox<String> cmbEstudiante;
     private final JComboBox<String> cmbCurso;
     private final JComboBox<String> cmbProfesor;
+
     private final JTextField txtNombre;
     private final JTextField txtApellido;
+
     private final JComboBox<String> cmbNuevaCarrera;
+
     private final JSpinner spPromedio;
+
     private final JTextField txtProfesor;
     private final JSpinner spSalario;
 
     private final JTable tablaEstudiantes;
     private final JTable tablaCursos;
     private final JTable tablaProfesores;
+
     private final DefaultTableModel modeloEstudiantes;
     private final DefaultTableModel modeloCursos;
     private final DefaultTableModel modeloProfesores;
@@ -50,35 +71,83 @@ public class EstudianteView extends JFrame {
     private final JLabel lblTotalCursos;
     private final JLabel lblTotalProfesores;
     private final JLabel lblEstado;
+
     private EstudianteController controlador;
 
+    // =========================================================
+    // CONSTRUCTOR
+    // =========================================================
+
     public EstudianteView() {
+
         aplicarEstiloSistema();
 
         txtBuscar = new JTextField();
+
         cmbCarrera = new JComboBox<>();
         cmbEstado = new JComboBox<>();
         cmbEstudiante = new JComboBox<>();
         cmbCurso = new JComboBox<>();
         cmbProfesor = new JComboBox<>();
+
         txtNombre = new JTextField();
         txtApellido = new JTextField();
-        cmbNuevaCarrera = new JComboBox<>();
-        spPromedio = new JSpinner(new SpinnerNumberModel(3.0, 0.0, 5.0, 0.1));
-        txtProfesor = new JTextField();
-        spSalario = new JSpinner(new SpinnerNumberModel(3000000.0, 1.0, 99999999.0, 100000.0));
 
-        modeloEstudiantes = crearModelo(new String[]{"ID", "Nombre", "Apellido", "Carrera", "Promedio", "Estado"});
-        modeloCursos = crearModelo(new String[]{"Código", "Créditos", "Inscritos", "Profesor"});
-        modeloProfesores = crearModelo(new String[]{"ID", "Profesor", "Salario base"});
+        cmbNuevaCarrera = new JComboBox<>();
+
+        spPromedio = new JSpinner(
+                new SpinnerNumberModel(3.0, 0.0, 5.0, 0.1)
+        );
+
+        txtProfesor = new JTextField();
+
+        spSalario = new JSpinner(
+                new SpinnerNumberModel(
+                        3000000.0,
+                        1.0,
+                        99999999.0,
+                        100000.0
+                )
+        );
+
+        // Modelos de las tablas
+        modeloEstudiantes = crearModelo(
+                new String[]{
+                    "ID",
+                    "Nombre",
+                    "Apellido",
+                    "Carrera",
+                    "Promedio",
+                    "Estado"
+                }
+        );
+
+        modeloCursos = crearModelo(
+                new String[]{
+                    "Código",
+                    "Créditos",
+                    "Inscritos",
+                    "Profesor"
+                }
+        );
+
+        modeloProfesores = crearModelo(
+                new String[]{
+                    "ID",
+                    "Profesor",
+                    "Salario base"
+                }
+        );
 
         tablaEstudiantes = crearTabla(modeloEstudiantes);
         tablaCursos = crearTabla(modeloCursos);
         tablaProfesores = crearTabla(modeloProfesores);
 
+        // Contadores
         lblTotalEstudiantes = crearDato("0");
         lblTotalCursos = crearDato("0");
         lblTotalProfesores = crearDato("0");
+
         lblEstado = new JLabel("Listo para trabajar");
 
         configurarVentana();
@@ -86,512 +155,1756 @@ public class EstudianteView extends JFrame {
         configurarEventos();
     }
 
+    // =========================================================
+    // CONFIGURACIÓN DE VENTANA
+    // =========================================================
+
     private void configurarVentana() {
+
         setTitle("CampusAdmin | Gestión Universitaria");
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         setSize(1180, 760);
+
         setMinimumSize(new Dimension(1050, 680));
+
         setLocationRelativeTo(null);
     }
 
-    private void construirInterfaz() {
-        JPanel raiz = new JPanel(new BorderLayout());
-        raiz.setBackground(FONDO);
-        raiz.setBorder(new EmptyBorder(0, 0, 0, 0));
+    // =========================================================
+    // INTERFAZ PRINCIPAL
+    // =========================================================
 
-        raiz.add(crearEncabezado(), BorderLayout.NORTH);
-        raiz.add(crearContenido(), BorderLayout.CENTER);
-        raiz.add(crearBarraEstado(), BorderLayout.SOUTH);
+    private void construirInterfaz() {
+
+        JPanel raiz = new JPanel(new BorderLayout());
+
+        raiz.setBackground(FONDO);
+
+        raiz.setBorder(
+                new EmptyBorder(0, 0, 0, 0)
+        );
+
+        raiz.add(
+                crearEncabezado(),
+                BorderLayout.NORTH
+        );
+
+        raiz.add(
+                crearContenido(),
+                BorderLayout.CENTER
+        );
+
+        raiz.add(
+                crearBarraEstado(),
+                BorderLayout.SOUTH
+        );
 
         setContentPane(raiz);
     }
 
+    // =========================================================
+    // ENCABEZADO
+    // =========================================================
+
     private JPanel crearEncabezado() {
-        JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(AZUL);
-        header.setBorder(new EmptyBorder(22, 30, 22, 30));
+
+        JPanel header = new JPanel(
+                new BorderLayout()
+        );
+
+        header.setBackground(NEGRO);
+
+        header.setBorder(
+                new EmptyBorder(
+                        22,
+                        30,
+                        22,
+                        30
+                )
+        );
 
         JPanel textos = new JPanel();
+
         textos.setOpaque(false);
-        textos.setLayout(new BoxLayout(textos, BoxLayout.Y_AXIS));
 
-        JLabel titulo = new JLabel("CampusAdmin");
-        titulo.setForeground(Color.WHITE);
-        titulo.setFont(new Font("SansSerif", Font.BOLD, 28));
+        textos.setLayout(
+                new BoxLayout(
+                        textos,
+                        BoxLayout.Y_AXIS
+                )
+        );
 
-        JLabel subtitulo = new JLabel("Sistema universitario · Arquitectura MVC");
-        subtitulo.setForeground(new Color(219, 234, 254));
-        subtitulo.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        JLabel titulo = new JLabel(
+                "CampusAdmin"
+        );
+
+        titulo.setForeground(DORADO);
+
+        titulo.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.BOLD,
+                        28
+                )
+        );
+
+        JLabel subtitulo = new JLabel(
+                "Sistema universitario · Arquitectura MVC"
+        );
+
+        subtitulo.setForeground(Color.WHITE);
+
+        subtitulo.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.PLAIN,
+                        14
+                )
+        );
 
         textos.add(titulo);
-        textos.add(Box.createVerticalStrut(5));
+
+        textos.add(
+                Box.createVerticalStrut(5)
+        );
+
         textos.add(subtitulo);
 
-        JLabel version = new JLabel("GESTIÓN ACADÉMICA");
-        version.setForeground(new Color(191, 219, 254));
-        version.setFont(new Font("SansSerif", Font.BOLD, 12));
+        JLabel version = new JLabel(
+                "GESTIÓN ACADÉMICA"
+        );
 
-        header.add(textos, BorderLayout.WEST);
-        header.add(version, BorderLayout.EAST);
+        version.setForeground(DORADO);
+
+        version.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.BOLD,
+                        12
+                )
+        );
+
+        header.add(
+                textos,
+                BorderLayout.WEST
+        );
+
+        header.add(
+                version,
+                BorderLayout.EAST
+        );
+
         return header;
     }
 
-    private JPanel crearContenido() {
-        JPanel contenedor = new JPanel(new BorderLayout(18, 18));
-        contenedor.setBackground(FONDO);
-        contenedor.setBorder(new EmptyBorder(18, 24, 18, 24));
+    // =========================================================
+    // CONTENIDO
+    // =========================================================
 
-        JPanel superior = new JPanel(new BorderLayout(15, 15));
+    private JPanel crearContenido() {
+
+        JPanel contenedor = new JPanel(
+                new BorderLayout(18, 18)
+        );
+
+        contenedor.setBackground(FONDO);
+
+        contenedor.setBorder(
+                new EmptyBorder(
+                        18,
+                        24,
+                        18,
+                        24
+                )
+        );
+
+        JPanel superior = new JPanel(
+                new BorderLayout(15, 15)
+        );
+
         superior.setOpaque(false);
-        superior.add(crearTarjetas(), BorderLayout.NORTH);
-        superior.add(crearBuscador(), BorderLayout.CENTER);
+
+        superior.add(
+                crearTarjetas(),
+                BorderLayout.NORTH
+        );
+
+        superior.add(
+                crearBuscador(),
+                BorderLayout.CENTER
+        );
 
         JTabbedPane tabs = new JTabbedPane();
-        tabs.setFont(new Font("SansSerif", Font.BOLD, 13));
-        tabs.addTab("Estudiantes", crearPanelEstudiantes());
-        tabs.addTab("Cursos e inscripciones", crearPanelCursos());
-        tabs.addTab("Profesores", crearPanelProfesores());
 
-        contenedor.add(superior, BorderLayout.NORTH);
-        contenedor.add(tabs, BorderLayout.CENTER);
+        tabs.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.BOLD,
+                        13
+                )
+        );
+
+        tabs.addTab(
+                "Estudiantes",
+                crearPanelEstudiantes()
+        );
+
+        tabs.addTab(
+                "Cursos e inscripciones",
+                crearPanelCursos()
+        );
+
+        tabs.addTab(
+                "Profesores",
+                crearPanelProfesores()
+        );
+
+        contenedor.add(
+                superior,
+                BorderLayout.NORTH
+        );
+
+        contenedor.add(
+                tabs,
+                BorderLayout.CENTER
+        );
+
         return contenedor;
     }
 
+    // =========================================================
+    // TARJETAS DE RESUMEN
+    // =========================================================
+
     private JPanel crearTarjetas() {
-        JPanel panel = new JPanel(new GridLayout(1, 3, 14, 0));
+
+        JPanel panel = new JPanel(
+                new GridLayout(
+                        1,
+                        3,
+                        14,
+                        0
+                )
+        );
+
         panel.setOpaque(false);
-        panel.add(crearTarjeta("ESTUDIANTES", lblTotalEstudiantes, AZUL));
-        panel.add(crearTarjeta("CURSOS", lblTotalCursos, VERDE));
-        panel.add(crearTarjeta("PROFESORES", lblTotalProfesores, NARANJA));
+
+        panel.add(
+                crearTarjeta(
+                        "ESTUDIANTES",
+                        lblTotalEstudiantes,
+                        ROJO
+                )
+        );
+
+        panel.add(
+                crearTarjeta(
+                        "CURSOS",
+                        lblTotalCursos,
+                        DORADO
+                )
+        );
+
+        panel.add(
+                crearTarjeta(
+                        "PROFESORES",
+                        lblTotalProfesores,
+                        NEGRO
+                )
+        );
+
         return panel;
     }
 
-    private JPanel crearTarjeta(String titulo, JLabel dato, Color color) {
-        JPanel tarjeta = new JPanel(new BorderLayout());
+    private JPanel crearTarjeta(
+            String titulo,
+            JLabel dato,
+            Color color
+    ) {
+
+        JPanel tarjeta = new JPanel(
+                new BorderLayout()
+        );
+
         tarjeta.setBackground(BLANCO);
-        tarjeta.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(new Color(229, 231, 235)),
-                new EmptyBorder(12, 16, 12, 16)));
+
+        tarjeta.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(BORDE),
+                        new EmptyBorder(
+                                12,
+                                16,
+                                12,
+                                16
+                        )
+                )
+        );
 
         JLabel lblTitulo = new JLabel(titulo);
-        lblTitulo.setForeground(SECUNDARIO);
-        lblTitulo.setFont(new Font("SansSerif", Font.BOLD, 11));
+
+        lblTitulo.setForeground(
+                SECUNDARIO
+        );
+
+        lblTitulo.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.BOLD,
+                        11
+                )
+        );
 
         dato.setForeground(color);
-        dato.setFont(new Font("SansSerif", Font.BOLD, 25));
 
-        tarjeta.add(lblTitulo, BorderLayout.NORTH);
-        tarjeta.add(dato, BorderLayout.CENTER);
+        dato.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.BOLD,
+                        25
+                )
+        );
+
+        tarjeta.add(
+                lblTitulo,
+                BorderLayout.NORTH
+        );
+
+        tarjeta.add(
+                dato,
+                BorderLayout.CENTER
+        );
+
         return tarjeta;
     }
 
-    private JPanel crearBuscador() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBackground(BLANCO);
-        panel.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(new Color(229, 231, 235)),
-                new EmptyBorder(12, 16, 12, 16)));
+    // =========================================================
+    // BUSCADOR
+    // =========================================================
 
-        JLabel titulo = new JLabel("Buscar estudiantes");
-        titulo.setFont(new Font("SansSerif", Font.BOLD, 15));
+    private JPanel crearBuscador() {
+
+        JPanel panel = new JPanel(
+                new BorderLayout(
+                        10,
+                        10
+                )
+        );
+
+        panel.setBackground(BLANCO);
+
+        panel.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(BORDE),
+                        new EmptyBorder(
+                                12,
+                                16,
+                                12,
+                                16
+                        )
+                )
+        );
+
+        JLabel titulo = new JLabel(
+                "Buscar estudiantes"
+        );
+
+        titulo.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.BOLD,
+                        15
+                )
+        );
+
         titulo.setForeground(TEXTO);
 
-        JPanel campos = new JPanel(new GridBagLayout());
-        campos.setOpaque(false);
-        GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(0, 0, 0, 10);
-        c.fill = GridBagConstraints.HORIZONTAL;
+        JPanel campos = new JPanel(
+                new GridBagLayout()
+        );
 
-        txtBuscar.setPreferredSize(new Dimension(230, 34));
-        cmbCarrera.setPreferredSize(new Dimension(210, 34));
-        cmbEstado.setPreferredSize(new Dimension(150, 34));
+        campos.setOpaque(false);
+
+        GridBagConstraints c =
+                new GridBagConstraints();
+
+        c.insets = new Insets(
+                0,
+                0,
+                0,
+                10
+        );
+
+        c.fill =
+                GridBagConstraints.HORIZONTAL;
+
+        txtBuscar.setPreferredSize(
+                new Dimension(
+                        230,
+                        34
+                )
+        );
+
+        cmbCarrera.setPreferredSize(
+                new Dimension(
+                        210,
+                        34
+                )
+        );
+
+        cmbEstado.setPreferredSize(
+                new Dimension(
+                        150,
+                        34
+                )
+        );
 
         c.gridx = 0;
         c.weightx = 1;
-        campos.add(txtBuscar, c);
-        c.gridx = 1;
-        campos.add(cmbCarrera, c);
-        c.gridx = 2;
-        campos.add(cmbEstado, c);
 
-        JButton buscar = boton("Buscar", AZUL);
-        JButton limpiar = boton("Limpiar", new Color(75, 85, 99));
+        campos.add(
+                txtBuscar,
+                c
+        );
+
+        c.gridx = 1;
+
+        campos.add(
+                cmbCarrera,
+                c
+        );
+
+        c.gridx = 2;
+
+        campos.add(
+                cmbEstado,
+                c
+        );
+
+        JButton buscar =
+                boton(
+                        "Buscar",
+                        ROJO
+                );
+
+        JButton limpiar =
+                boton(
+                        "Limpiar",
+                        NEGRO
+                );
+
         c.gridx = 3;
         c.weightx = 0;
-        campos.add(buscar, c);
+
+        campos.add(
+                buscar,
+                c
+        );
+
         c.gridx = 4;
-        campos.add(limpiar, c);
 
-        JButton listar = boton("Ver todos", VERDE);
+        campos.add(
+                limpiar,
+                c
+        );
+
+        JButton listar =
+                boton(
+                        "Ver todos",
+                        DORADO
+                );
+
         c.gridx = 5;
-        campos.add(listar, c);
 
-        panel.add(titulo, BorderLayout.WEST);
-        panel.add(campos, BorderLayout.CENTER);
+        campos.add(
+                listar,
+                c
+        );
+
+        panel.add(
+                titulo,
+                BorderLayout.WEST
+        );
+
+        panel.add(
+                campos,
+                BorderLayout.CENTER
+        );
 
         buscar.addActionListener(e -> {
+
             if (cmbEstado.getSelectedIndex() > 0) {
-                EstadoMatricula estado = EstadoMatricula.valueOf((String) cmbEstado.getSelectedItem());
-                mostrarEstudiantes(controlador.obtenerFilasPorEstado(estado));
-            } else if (!txtBuscar.getText().trim().isEmpty()) {
-                controlador.buscarEstudiante(txtBuscar.getText().trim());
-            } else if (cmbCarrera.getSelectedIndex() > 0) {
-                controlador.buscarEstudiantePorCarrera((String) cmbCarrera.getSelectedItem());
+
+                EstadoMatricula estado =
+                        EstadoMatricula.valueOf(
+                                (String) cmbEstado.getSelectedItem()
+                        );
+
+                mostrarEstudiantes(
+                        controlador.obtenerFilasPorEstado(
+                                estado
+                        )
+                );
+
+            } else if (
+                    !txtBuscar
+                            .getText()
+                            .trim()
+                            .isEmpty()
+                    ) {
+
+                controlador.buscarEstudiante(
+                        txtBuscar.getText().trim()
+                );
+
+            } else if (
+                    cmbCarrera.getSelectedIndex() > 0
+                    ) {
+
+                controlador.buscarEstudiantePorCarrera(
+                        (String) cmbCarrera.getSelectedItem()
+                );
+
             } else {
-                mostrarEstudiantes(controlador.obtenerFilasEstudiantes());
+
+                mostrarEstudiantes(
+                        controlador.obtenerFilasEstudiantes()
+                );
             }
         });
 
         limpiar.addActionListener(e -> {
+
             txtBuscar.setText("");
+
             cmbCarrera.setSelectedIndex(0);
+
             cmbEstado.setSelectedIndex(0);
-            mostrarEstudiantes(controlador.obtenerFilasEstudiantes());
+
+            mostrarEstudiantes(
+                    controlador.obtenerFilasEstudiantes()
+            );
         });
 
-        listar.addActionListener(e -> mostrarEstudiantes(controlador.obtenerFilasEstudiantes()));
+        listar.addActionListener(
+                e -> mostrarEstudiantes(
+                        controlador.obtenerFilasEstudiantes()
+                )
+        );
+
         return panel;
     }
+
+    // =========================================================
+    // PANEL ESTUDIANTES
+    // =========================================================
 
     private JPanel crearPanelEstudiantes() {
-        JPanel panel = new JPanel(new BorderLayout(15, 15));
-        panel.setBackground(FONDO);
-        panel.setBorder(new EmptyBorder(15, 5, 5, 5));
 
-        panel.add(crearFormularioEstudiante(), BorderLayout.NORTH);
-        panel.add(new JScrollPane(tablaEstudiantes), BorderLayout.CENTER);
+        JPanel panel = new JPanel(
+                new BorderLayout(
+                        15,
+                        15
+                )
+        );
+
+        panel.setBackground(FONDO);
+
+        panel.setBorder(
+                new EmptyBorder(
+                        15,
+                        5,
+                        5,
+                        5
+                )
+        );
+
+        panel.add(
+                crearFormularioEstudiante(),
+                BorderLayout.NORTH
+        );
+
+        panel.add(
+                new JScrollPane(
+                        tablaEstudiantes
+                ),
+                BorderLayout.CENTER
+        );
+
         return panel;
     }
 
-    private JPanel crearFormularioEstudiante() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(BLANCO);
-        panel.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(new Color(229, 231, 235)),
-                new EmptyBorder(14, 16, 14, 16)));
+    // =========================================================
+    // FORMULARIO ESTUDIANTE
+    // =========================================================
 
-        GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(5, 5, 5, 10);
-        c.fill = GridBagConstraints.HORIZONTAL;
+    private JPanel crearFormularioEstudiante() {
+
+        JPanel panel = new JPanel(
+                new GridBagLayout()
+        );
+
+        panel.setBackground(BLANCO);
+
+        panel.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(BORDE),
+                        new EmptyBorder(
+                                14,
+                                16,
+                                14,
+                                16
+                        )
+                )
+        );
+
+        GridBagConstraints c =
+                new GridBagConstraints();
+
+        c.insets =
+                new Insets(
+                        5,
+                        5,
+                        5,
+                        10
+                );
+
+        c.fill =
+                GridBagConstraints.HORIZONTAL;
+
         c.weightx = 1;
 
-        JLabel titulo = new JLabel("Registrar estudiante");
-        titulo.setFont(new Font("SansSerif", Font.BOLD, 15));
+        JLabel titulo =
+                new JLabel(
+                        "Registrar estudiante"
+                );
+
+        titulo.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.BOLD,
+                        15
+                )
+        );
+
         titulo.setForeground(TEXTO);
+
         c.gridx = 0;
         c.gridy = 0;
         c.gridwidth = 2;
-        panel.add(titulo, c);
+
+        panel.add(
+                titulo,
+                c
+        );
 
         c.gridwidth = 1;
+
         c.gridy = 1;
+
         c.gridx = 0;
-        panel.add(label("Nombre"), c);
+
+        panel.add(
+                label("Nombre"),
+                c
+        );
+
         c.gridx = 1;
-        panel.add(label("Apellido"), c);
+
+        panel.add(
+                label("Apellido"),
+                c
+        );
+
         c.gridx = 2;
-        panel.add(label("Carrera"), c);
+
+        panel.add(
+                label("Carrera"),
+                c
+        );
+
         c.gridx = 3;
-        panel.add(label("Promedio"), c);
+
+        panel.add(
+                label("Promedio"),
+                c
+        );
+
         c.gridx = 4;
-        panel.add(new JLabel(), c);
+
+        panel.add(
+                new JLabel(),
+                c
+        );
 
         c.gridy = 2;
+
         c.gridx = 0;
-        panel.add(txtNombre, c);
+
+        panel.add(
+                txtNombre,
+                c
+        );
+
         c.gridx = 1;
-        panel.add(txtApellido, c);
+
+        panel.add(
+                txtApellido,
+                c
+        );
+
         c.gridx = 2;
-        panel.add(cmbNuevaCarrera, c);
+
+        panel.add(
+                cmbNuevaCarrera,
+                c
+        );
+
         c.gridx = 3;
-        panel.add(spPromedio, c);
 
-        JButton agregar = boton("+ Agregar estudiante", AZUL);
+        panel.add(
+                spPromedio,
+                c
+        );
+
+        JButton agregar =
+                boton(
+                        "+ Agregar estudiante",
+                        ROJO
+                );
+
         c.gridx = 4;
-        c.weightx = 0;
-        panel.add(agregar, c);
 
-        agregar.addActionListener(e -> agregarEstudiante());
+        c.weightx = 0;
+
+        panel.add(
+                agregar,
+                c
+        );
+
+        agregar.addActionListener(
+                e -> agregarEstudiante()
+        );
+
         return panel;
     }
+
+    // =========================================================
+    // PANEL CURSOS
+    // =========================================================
 
     private JPanel crearPanelCursos() {
-        JPanel panel = new JPanel(new BorderLayout(15, 15));
+
+        JPanel panel = new JPanel(
+                new BorderLayout(
+                        15,
+                        15
+                )
+        );
+
         panel.setBackground(FONDO);
-        panel.setBorder(new EmptyBorder(15, 5, 5, 5));
 
-        JPanel acciones = new JPanel(new GridBagLayout());
+        panel.setBorder(
+                new EmptyBorder(
+                        15,
+                        5,
+                        5,
+                        5
+                )
+        );
+
+        JPanel acciones =
+                new JPanel(
+                        new GridBagLayout()
+                );
+
         acciones.setBackground(BLANCO);
-        acciones.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(new Color(229, 231, 235)),
-                new EmptyBorder(12, 16, 12, 16)));
 
-        GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(4, 5, 4, 10);
-        c.fill = GridBagConstraints.HORIZONTAL;
+        acciones.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(BORDE),
+                        new EmptyBorder(
+                                12,
+                                16,
+                                12,
+                                16
+                        )
+                )
+        );
 
-        c.gridx = 0; c.gridy = 0; acciones.add(label("Estudiante"), c);
-        c.gridx = 1; c.weightx = 1; acciones.add(cmbEstudiante, c);
-        c.gridx = 2; c.weightx = 0; acciones.add(label("Curso"), c);
-        c.gridx = 3; c.weightx = 1; acciones.add(cmbCurso, c);
-        c.gridx = 4; c.weightx = 0;
-        JButton inscribir = boton("Inscribir", VERDE);
-        acciones.add(inscribir, c);
+        GridBagConstraints c =
+                new GridBagConstraints();
 
-        c.gridx = 5;
-        JButton retirar = boton("Retirar", ROJO);
-        acciones.add(retirar, c);
+        c.insets =
+                new Insets(
+                        4,
+                        5,
+                        4,
+                        10
+                );
 
-        c.gridx = 6;
-        JButton refrescar = boton("Actualizar", AZUL);
-        acciones.add(refrescar, c);
+        c.fill =
+                GridBagConstraints.HORIZONTAL;
 
-        inscribir.addActionListener(e -> inscribir());
-        retirar.addActionListener(e -> retirarInscripcion());
-        refrescar.addActionListener(e -> mostrarCursos());
+        c.gridx = 0;
+        c.gridy = 0;
 
-        panel.add(acciones, BorderLayout.NORTH);
-        panel.add(new JScrollPane(tablaCursos), BorderLayout.CENTER);
-        return panel;
-    }
+        acciones.add(
+                label("Estudiante"),
+                c
+        );
 
-    private JPanel crearPanelProfesores() {
-        JPanel panel = new JPanel(new BorderLayout(15, 15));
-        panel.setBackground(FONDO);
-        panel.setBorder(new EmptyBorder(15, 5, 5, 5));
-
-        JPanel acciones = new JPanel(new GridBagLayout());
-        acciones.setBackground(BLANCO);
-        acciones.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(new Color(229, 231, 235)),
-                new EmptyBorder(12, 16, 12, 16)));
-
-        GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(4, 5, 4, 10);
-        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridx = 1;
         c.weightx = 1;
 
-        c.gridx = 0; c.gridy = 0; acciones.add(label("Nuevo profesor"), c);
-        c.gridx = 1; acciones.add(txtProfesor, c);
-        c.gridx = 2; acciones.add(label("Salario base"), c);
-        c.gridx = 3; acciones.add(spSalario, c);
-        c.gridx = 4; c.weightx = 0;
-        JButton agregar = boton("+ Agregar", NARANJA);
-        acciones.add(agregar, c);
+        acciones.add(
+                cmbEstudiante,
+                c
+        );
+
+        c.gridx = 2;
+        c.weightx = 0;
+
+        acciones.add(
+                label("Curso"),
+                c
+        );
+
+        c.gridx = 3;
+        c.weightx = 1;
+
+        acciones.add(
+                cmbCurso,
+                c
+        );
+
+        c.gridx = 4;
+        c.weightx = 0;
+
+        JButton inscribir =
+                boton(
+                        "Inscribir",
+                        DORADO
+                );
+
+        acciones.add(
+                inscribir,
+                c
+        );
 
         c.gridx = 5;
-        acciones.add(label("Asignar"), c);
+
+        JButton retirar =
+                boton(
+                        "Retirar",
+                        ROJO
+                );
+
+        acciones.add(
+                retirar,
+                c
+        );
+
         c.gridx = 6;
-        acciones.add(cmbProfesor, c);
-        c.gridx = 7;
-        acciones.add(cmbCurso, c);
-        c.gridx = 8;
-        JButton asignar = boton("Asignar a curso", AZUL);
-        acciones.add(asignar, c);
 
-        agregar.addActionListener(e -> agregarProfesor());
-        asignar.addActionListener(e -> asignarProfesor());
+        JButton refrescar =
+                boton(
+                        "Actualizar",
+                        NEGRO
+                );
 
-        panel.add(acciones, BorderLayout.NORTH);
-        panel.add(new JScrollPane(tablaProfesores), BorderLayout.CENTER);
+        acciones.add(
+                refrescar,
+                c
+        );
+
+        inscribir.addActionListener(
+                e -> inscribir()
+        );
+
+        retirar.addActionListener(
+                e -> retirarInscripcion()
+        );
+
+        refrescar.addActionListener(
+                e -> mostrarCursos()
+        );
+
+        panel.add(
+                acciones,
+                BorderLayout.NORTH
+        );
+
+        panel.add(
+                new JScrollPane(
+                        tablaCursos
+                ),
+                BorderLayout.CENTER
+        );
+
         return panel;
     }
 
+    // =========================================================
+    // PANEL PROFESORES
+    // =========================================================
+
+    private JPanel crearPanelProfesores() {
+
+        JPanel panel = new JPanel(
+                new BorderLayout(
+                        15,
+                        15
+                )
+        );
+
+        panel.setBackground(FONDO);
+
+        panel.setBorder(
+                new EmptyBorder(
+                        15,
+                        5,
+                        5,
+                        5
+                )
+        );
+
+        JPanel acciones =
+                new JPanel(
+                        new GridBagLayout()
+                );
+
+        acciones.setBackground(BLANCO);
+
+        acciones.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(BORDE),
+                        new EmptyBorder(
+                                12,
+                                16,
+                                12,
+                                16
+                        )
+                )
+        );
+
+        GridBagConstraints c =
+                new GridBagConstraints();
+
+        c.insets =
+                new Insets(
+                        4,
+                        5,
+                        4,
+                        10
+                );
+
+        c.fill =
+                GridBagConstraints.HORIZONTAL;
+
+        c.weightx = 1;
+
+        c.gridx = 0;
+        c.gridy = 0;
+
+        acciones.add(
+                label("Nuevo profesor"),
+                c
+        );
+
+        c.gridx = 1;
+
+        acciones.add(
+                txtProfesor,
+                c
+        );
+
+        c.gridx = 2;
+
+        acciones.add(
+                label("Salario base"),
+                c
+        );
+
+        c.gridx = 3;
+
+        acciones.add(
+                spSalario,
+                c
+        );
+
+        c.gridx = 4;
+
+        c.weightx = 0;
+
+        JButton agregar =
+                boton(
+                        "+ Agregar",
+                        DORADO
+                );
+
+        acciones.add(
+                agregar,
+                c
+        );
+
+        c.gridx = 5;
+
+        acciones.add(
+                label("Asignar"),
+                c
+        );
+
+        c.gridx = 6;
+
+        acciones.add(
+                cmbProfesor,
+                c
+        );
+
+        c.gridx = 7;
+
+        acciones.add(
+                cmbCurso,
+                c
+        );
+
+        c.gridx = 8;
+
+        JButton asignar =
+                boton(
+                        "Asignar a curso",
+                        NEGRO
+                );
+
+        acciones.add(
+                asignar,
+                c
+        );
+
+        agregar.addActionListener(
+                e -> agregarProfesor()
+        );
+
+        asignar.addActionListener(
+                e -> asignarProfesor()
+        );
+
+        panel.add(
+                acciones,
+                BorderLayout.NORTH
+        );
+
+        panel.add(
+                new JScrollPane(
+                        tablaProfesores
+                ),
+                BorderLayout.CENTER
+        );
+
+        return panel;
+    }
+
+    // =========================================================
+    // BARRA DE ESTADO
+    // =========================================================
+
     private JPanel crearBarraEstado() {
-        JPanel barra = new JPanel(new BorderLayout());
-        barra.setBackground(new Color(31, 41, 55));
-        barra.setBorder(new EmptyBorder(8, 18, 8, 18));
-        lblEstado.setForeground(new Color(229, 231, 235));
-        lblEstado.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        barra.add(lblEstado, BorderLayout.WEST);
+
+        JPanel barra =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        barra.setBackground(NEGRO);
+
+        barra.setBorder(
+                new EmptyBorder(
+                        8,
+                        18,
+                        8,
+                        18
+                )
+        );
+
+        lblEstado.setForeground(
+                Color.WHITE
+        );
+
+        lblEstado.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.PLAIN,
+                        12
+                )
+        );
+
+        barra.add(
+                lblEstado,
+                BorderLayout.WEST
+        );
+
         return barra;
     }
 
+    // =========================================================
+    // EVENTOS
+    // =========================================================
+
     private void configurarEventos() {
+
         cmbEstado.addActionListener(e -> {
-            if (controlador == null || cmbEstado.getSelectedIndex() == 0) return;
-            EstadoMatricula estado = EstadoMatricula.valueOf((String) cmbEstado.getSelectedItem());
-            mostrarEstudiantes(controlador.obtenerFilasPorEstado(estado));
+
+            if (
+                    controlador == null
+                    || cmbEstado.getSelectedIndex() == 0
+                    ) {
+
+                return;
+            }
+
+            EstadoMatricula estado =
+                    EstadoMatricula.valueOf(
+                            (String) cmbEstado.getSelectedItem()
+                    );
+
+            mostrarEstudiantes(
+                    controlador.obtenerFilasPorEstado(
+                            estado
+                    )
+            );
         });
     }
 
+    // =========================================================
+    // AGREGAR ESTUDIANTE
+    // =========================================================
+
     private void agregarEstudiante() {
-        String carrera = (String) cmbNuevaCarrera.getSelectedItem();
-        double promedio = ((Number) spPromedio.getValue()).doubleValue();
-        if (controlador.agregarEstudiante(txtNombre.getText(), txtApellido.getText(), carrera, promedio)) {
+
+        String carrera =
+                (String) cmbNuevaCarrera.getSelectedItem();
+
+        double promedio =
+                ((Number) spPromedio.getValue())
+                        .doubleValue();
+
+        if (
+                controlador.agregarEstudiante(
+                        txtNombre.getText(),
+                        txtApellido.getText(),
+                        carrera,
+                        promedio
+                )
+                ) {
+
             txtNombre.setText("");
+
             txtApellido.setText("");
+
             spPromedio.setValue(3.0);
+
             recargarCombos();
-            mostrarEstudiantes(controlador.obtenerFilasEstudiantes());
+
+            mostrarEstudiantes(
+                    controlador.obtenerFilasEstudiantes()
+            );
+
             actualizarTotales();
         }
     }
+
+    // =========================================================
+    // INSCRIBIR
+    // =========================================================
 
     private void inscribir() {
-        if (cmbEstudiante.getSelectedIndex() < 0 || cmbCurso.getSelectedIndex() < 0) return;
-        int id = controlador.obtenerIdEstudiantePorIndice(cmbEstudiante.getSelectedIndex());
-        String codigo = (String) cmbCurso.getSelectedItem();
-        if (controlador.inscribirEstudiante(id, codigo)) {
+
+        if (
+                cmbEstudiante.getSelectedIndex() < 0
+                || cmbCurso.getSelectedIndex() < 0
+                ) {
+
+            return;
+        }
+
+        int id =
+                controlador.obtenerIdEstudiantePorIndice(
+                        cmbEstudiante.getSelectedIndex()
+                );
+
+        String codigo =
+                (String) cmbCurso.getSelectedItem();
+
+        if (
+                controlador.inscribirEstudiante(
+                        id,
+                        codigo
+                )
+                ) {
+
             mostrarCursos();
-            mostrarEstudiantes(controlador.obtenerFilasEstudiantes());
+
+            mostrarEstudiantes(
+                    controlador.obtenerFilasEstudiantes()
+            );
         }
     }
+
+    // =========================================================
+    // RETIRAR CURSO
+    // =========================================================
 
     private void retirarInscripcion() {
-        if (cmbEstudiante.getSelectedIndex() < 0 || cmbCurso.getSelectedIndex() < 0) return;
-        int id = controlador.obtenerIdEstudiantePorIndice(cmbEstudiante.getSelectedIndex());
-        String codigo = (String) cmbCurso.getSelectedItem();
-        if (controlador.retirarInscripcion(id, codigo)) {
+
+        if (
+                cmbEstudiante.getSelectedIndex() < 0
+                || cmbCurso.getSelectedIndex() < 0
+                ) {
+
+            return;
+        }
+
+        int id =
+                controlador.obtenerIdEstudiantePorIndice(
+                        cmbEstudiante.getSelectedIndex()
+                );
+
+        String codigo =
+                (String) cmbCurso.getSelectedItem();
+
+        if (
+                controlador.retirarInscripcion(
+                        id,
+                        codigo
+                )
+                ) {
+
             mostrarCursos();
-            mostrarEstudiantes(controlador.obtenerFilasEstudiantes());
+
+            mostrarEstudiantes(
+                    controlador.obtenerFilasEstudiantes()
+            );
         }
     }
 
+    // =========================================================
+    // AGREGAR PROFESOR
+    // =========================================================
+
     private void agregarProfesor() {
-        double salario = ((Number) spSalario.getValue()).doubleValue();
-        if (controlador.agregarProfesor(txtProfesor.getText(), salario)) {
+
+        double salario =
+                ((Number) spSalario.getValue())
+                        .doubleValue();
+
+        if (
+                controlador.agregarProfesor(
+                        txtProfesor.getText(),
+                        salario
+                )
+                ) {
+
             txtProfesor.setText("");
+
             recargarCombos();
+
             mostrarProfesores();
+
             actualizarTotales();
         }
     }
 
+    // =========================================================
+    // ASIGNAR PROFESOR
+    // =========================================================
+
     private void asignarProfesor() {
-        if (cmbProfesor.getSelectedIndex() < 0 || cmbCurso.getSelectedIndex() < 0) return;
-        int idProfesor = controlador.obtenerIdProfesorPorIndice(cmbProfesor.getSelectedIndex());
-        String codigo = (String) cmbCurso.getSelectedItem();
-        if (controlador.asignarProfesor(codigo, idProfesor)) {
+
+        if (
+                cmbProfesor.getSelectedIndex() < 0
+                || cmbCurso.getSelectedIndex() < 0
+                ) {
+
+            return;
+        }
+
+        int idProfesor =
+                controlador.obtenerIdProfesorPorIndice(
+                        cmbProfesor.getSelectedIndex()
+                );
+
+        String codigo =
+                (String) cmbCurso.getSelectedItem();
+
+        if (
+                controlador.asignarProfesor(
+                        codigo,
+                        idProfesor
+                )
+                ) {
+
             mostrarCursos();
+
             mostrarProfesores();
         }
     }
 
+    // =========================================================
+    // RECARGAR COMBOS
+    // =========================================================
+
     private void recargarCombos() {
-        cargarCombo(cmbCarrera, controlador.obtenerCarrerasUnicas(), "Todas las carreras");
-        cargarCombo(cmbEstado, new String[]{"ACTIVO", "EGRESADO", "RETIRADO"}, "Todos los estados");
-        cargarCombo(cmbNuevaCarrera, controlador.obtenerCarrerasUnicas(), "Seleccionar carrera");
-        cargarCombo(cmbEstudiante, controlador.obtenerEstudiantesParaCombo(), null);
-        cargarCombo(cmbCurso, controlador.obtenerCursos(), null);
-        cargarCombo(cmbProfesor, controlador.obtenerProfesores(), null);
+
+        cargarCombo(
+                cmbCarrera,
+                controlador.obtenerCarrerasUnicas(),
+                "Todas las carreras"
+        );
+
+        cargarCombo(
+                cmbEstado,
+                new String[]{
+                    "ACTIVO",
+                    "EGRESADO",
+                    "RETIRADO"
+                },
+                "Todos los estados"
+        );
+
+        cargarCombo(
+                cmbNuevaCarrera,
+                controlador.obtenerCarrerasUnicas(),
+                "Seleccionar carrera"
+        );
+
+        cargarCombo(
+                cmbEstudiante,
+                controlador.obtenerEstudiantesParaCombo(),
+                null
+        );
+
+        cargarCombo(
+                cmbCurso,
+                controlador.obtenerCursos(),
+                null
+        );
+
+        cargarCombo(
+                cmbProfesor,
+                controlador.obtenerProfesores(),
+                null
+        );
     }
 
-    private void cargarCombo(JComboBox<String> combo, String[] datos, String primeraOpcion) {
+    private void cargarCombo(
+            JComboBox<String> combo,
+            String[] datos,
+            String primeraOpcion
+    ) {
+
         combo.removeAllItems();
-        if (primeraOpcion != null) combo.addItem(primeraOpcion);
-        for (String dato : datos) combo.addItem(dato);
+
+        if (primeraOpcion != null) {
+            combo.addItem(primeraOpcion);
+        }
+
+        for (String dato : datos) {
+            combo.addItem(dato);
+        }
     }
 
-    public void setControlador(EstudianteController controlador) {
+    // =========================================================
+    // CONECTAR CONTROLADOR
+    // =========================================================
+
+    public void setControlador(
+            EstudianteController controlador
+    ) {
+
         this.controlador = controlador;
+
         recargarCombos();
+
         actualizarTotales();
-        mostrarEstudiantes(controlador.obtenerFilasEstudiantes());
+
+        mostrarEstudiantes(
+                controlador.obtenerFilasEstudiantes()
+        );
+
         mostrarCursos();
+
         mostrarProfesores();
     }
 
-    public void mostrarEstudiante(Object[] fila) {
+    // =========================================================
+    // MOSTRAR ESTUDIANTES
+    // =========================================================
+
+    public void mostrarEstudiante(
+            Object[] fila
+    ) {
+
         limpiar(modeloEstudiantes);
+
         modeloEstudiantes.addRow(fila);
-        lblEstado.setText("Se encontró 1 estudiante.");
+
+        lblEstado.setText(
+                "Se encontró 1 estudiante."
+        );
     }
 
-    public void mostrarEstudiantes(List<Object[]> filas) {
+    public void mostrarEstudiantes(
+            List<Object[]> filas
+    ) {
+
         limpiar(modeloEstudiantes);
-        if (filas == null || filas.isEmpty()) {
-            lblEstado.setText("No se encontraron estudiantes con ese criterio.");
+
+        if (
+                filas == null
+                || filas.isEmpty()
+                ) {
+
+            lblEstado.setText(
+                    "No se encontraron estudiantes con ese criterio."
+            );
+
             return;
         }
-        for (Object[] fila : filas) modeloEstudiantes.addRow(fila);
-        lblEstado.setText("Mostrando " + filas.size() + " estudiante(s).");
+
+        for (Object[] fila : filas) {
+
+            modeloEstudiantes.addRow(fila);
+        }
+
+        lblEstado.setText(
+                "Mostrando "
+                + filas.size()
+                + " estudiante(s)."
+        );
     }
+
+    // =========================================================
+    // MOSTRAR CURSOS
+    // =========================================================
 
     private void mostrarCursos() {
+
         limpiar(modeloCursos);
-        for (Object[] fila : controlador.obtenerFilasCursos()) modeloCursos.addRow(fila);
+
+        for (
+                Object[] fila
+                : controlador.obtenerFilasCursos()
+                ) {
+
+            modeloCursos.addRow(fila);
+        }
     }
+
+    // =========================================================
+    // MOSTRAR PROFESORES
+    // =========================================================
 
     private void mostrarProfesores() {
+
         limpiar(modeloProfesores);
-        for (Object[] fila : controlador.obtenerFilasProfesores()) modeloProfesores.addRow(fila);
+
+        for (
+                Object[] fila
+                : controlador.obtenerFilasProfesores()
+                ) {
+
+            modeloProfesores.addRow(fila);
+        }
     }
 
-    public void mostrarError(String mensaje) {
-        JOptionPane.showMessageDialog(this, mensaje, "Atención", JOptionPane.WARNING_MESSAGE);
+    // =========================================================
+    // MENSAJES
+    // =========================================================
+
+    public void mostrarError(
+            String mensaje
+    ) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                mensaje,
+                "Atención",
+                JOptionPane.WARNING_MESSAGE
+        );
+
         lblEstado.setText(mensaje);
     }
 
-    public void mostrarMensaje(String mensaje) {
-        JOptionPane.showMessageDialog(this, mensaje, "Operación realizada", JOptionPane.INFORMATION_MESSAGE);
+    public void mostrarMensaje(
+            String mensaje
+    ) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                mensaje,
+                "Operación realizada",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+
         lblEstado.setText(mensaje);
     }
+
+    // =========================================================
+    // ACTUALIZAR TOTALES
+    // =========================================================
 
     private void actualizarTotales() {
-        lblTotalEstudiantes.setText(String.valueOf(controlador.obtenerTotalEstudiantes()));
-        lblTotalCursos.setText(String.valueOf(controlador.obtenerTotalCursos()));
-        lblTotalProfesores.setText(String.valueOf(controlador.obtenerTotalProfesores()));
+
+        lblTotalEstudiantes.setText(
+                String.valueOf(
+                        controlador.obtenerTotalEstudiantes()
+                )
+        );
+
+        lblTotalCursos.setText(
+                String.valueOf(
+                        controlador.obtenerTotalCursos()
+                )
+        );
+
+        lblTotalProfesores.setText(
+                String.valueOf(
+                        controlador.obtenerTotalProfesores()
+                )
+        );
     }
 
-    private DefaultTableModel crearModelo(String[] columnas) {
-        return new DefaultTableModel(columnas, 0) {
+    // =========================================================
+    // MODELO DE TABLA
+    // =========================================================
+
+    private DefaultTableModel crearModelo(
+            String[] columnas
+    ) {
+
+        return new DefaultTableModel(
+                columnas,
+                0
+        ) {
+
             @Override
-            public boolean isCellEditable(int row, int column) {
+            public boolean isCellEditable(
+                    int row,
+                    int column
+            ) {
+
                 return false;
             }
         };
     }
 
-    private JTable crearTabla(DefaultTableModel modelo) {
-        JTable tabla = new JTable(modelo);
+    // =========================================================
+    // CREAR TABLA
+    // =========================================================
+
+    private JTable crearTabla(
+            DefaultTableModel modelo
+    ) {
+
+        JTable tabla =
+                new JTable(modelo);
+
         tabla.setRowHeight(30);
-        tabla.setFont(new Font("SansSerif", Font.PLAIN, 13));
+
+        tabla.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.PLAIN,
+                        13
+                )
+        );
+
         tabla.setForeground(TEXTO);
-        tabla.setGridColor(new Color(229, 231, 235));
-        tabla.setSelectionBackground(AZUL_CLARO);
-        tabla.setSelectionForeground(TEXTO);
-        tabla.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
-        tabla.getTableHeader().setBackground(new Color(243, 244, 246));
-        tabla.getTableHeader().setForeground(TEXTO);
-        tabla.getTableHeader().setReorderingAllowed(false);
-        tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        tabla.setBackground(BLANCO);
+
+        tabla.setGridColor(BORDE);
+
+        // Selección roja clara
+        tabla.setSelectionBackground(
+                ROJO_CLARO
+        );
+
+        tabla.setSelectionForeground(
+                TEXTO
+        );
+
+        tabla.getTableHeader().setFont(
+                new Font(
+                        "SansSerif",
+                        Font.BOLD,
+                        12
+                )
+        );
+
+        tabla.getTableHeader().setBackground(
+                NEGRO
+        );
+
+        tabla.getTableHeader().setForeground(
+                DORADO
+        );
+
+        tabla.getTableHeader()
+                .setReorderingAllowed(false);
+
+        tabla.setSelectionMode(
+                ListSelectionModel.SINGLE_SELECTION
+        );
+
         return tabla;
     }
 
-    private JButton boton(String texto, Color color) {
-        JButton boton = new JButton(texto);
+    // =========================================================
+    // CREAR BOTÓN
+    // =========================================================
+
+    private JButton boton(
+            String texto,
+            Color color
+    ) {
+
+        JButton boton =
+                new JButton(texto);
+
+        boton.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.BOLD,
+                        12
+                )
+        );
+
+        // Texto visible según el fondo
+        if (
+                color.equals(NEGRO)
+                || color.equals(ROJO)
+                ) {
+
+            boton.setForeground(
+                    Color.WHITE
+            );
+
+        } else {
+
+            boton.setForeground(
+                    Color.BLACK
+            );
+        }
+
         boton.setBackground(color);
-        boton.setForeground(Color.WHITE);
-        boton.setFont(new Font("SansSerif", Font.BOLD, 12));
+
+        // Importante para que el color y texto
+        // se vean correctamente
+        boton.setOpaque(true);
+
+        boton.setContentAreaFilled(true);
+
         boton.setFocusPainted(false);
-        boton.setBorder(new EmptyBorder(9, 14, 9, 14));
-        boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        boton.setBorderPainted(true);
+
+        boton.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(
+                                color.darker()
+                        ),
+                        new EmptyBorder(
+                                8,
+                                14,
+                                8,
+                                14
+                        )
+                )
+        );
+
+        boton.setCursor(
+                new Cursor(
+                        Cursor.HAND_CURSOR
+                )
+        );
+
         return boton;
     }
 
-    private JLabel label(String texto) {
-        JLabel label = new JLabel(texto);
-        label.setForeground(SECUNDARIO);
-        label.setFont(new Font("SansSerif", Font.BOLD, 11));
+    // =========================================================
+    // LABELS
+    // =========================================================
+
+    private JLabel label(
+            String texto
+    ) {
+
+        JLabel label =
+                new JLabel(texto);
+
+        label.setForeground(
+                SECUNDARIO
+        );
+
+        label.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.BOLD,
+                        11
+                )
+        );
+
         return label;
     }
 
-    private JLabel crearDato(String texto) {
-        JLabel label = new JLabel(texto);
-        label.setHorizontalAlignment(SwingConstants.LEFT);
+    // =========================================================
+    // DATO DE TARJETA
+    // =========================================================
+
+    private JLabel crearDato(
+            String texto
+    ) {
+
+        JLabel label =
+                new JLabel(texto);
+
+        label.setHorizontalAlignment(
+                SwingConstants.LEFT
+        );
+
         return label;
     }
 
-    private void limpiar(DefaultTableModel modelo) {
+    // =========================================================
+    // LIMPIAR TABLA
+    // =========================================================
+
+    private void limpiar(
+            DefaultTableModel modelo
+    ) {
+
         modelo.setRowCount(0);
     }
 
+    // =========================================================
+    // ESTILO DEL SISTEMA
+    // =========================================================
+
     private void aplicarEstiloSistema() {
+
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+            UIManager.setLookAndFeel(
+                    UIManager
+                            .getSystemLookAndFeelClassName()
+            );
+
         } catch (Exception ignored) {
-            // Se conserva el estilo predeterminado si el sistema no permite cambiarlo.
+
+            // Se mantiene el estilo predeterminado.
         }
     }
 }
