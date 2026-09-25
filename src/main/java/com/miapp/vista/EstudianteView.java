@@ -20,7 +20,7 @@ public class EstudianteView extends JFrame {
     // COLORES DEL SISTEMA
     // =========================================================
 
-    private static final Color ROJO = new Color(170, 25, 25);
+     private static final Color ROJO = new Color(170, 25, 25);
     private static final Color ROJO_CLARO = new Color(252, 235, 235);
 
     private static final Color NEGRO = new Color(25, 25, 25);
@@ -36,7 +36,6 @@ public class EstudianteView extends JFrame {
     private static final Color SECUNDARIO = new Color(100, 100, 100);
 
     private static final Color BORDE = new Color(220, 220, 220);
-
     // =========================================================
     // COMPONENTES
     // =========================================================
@@ -80,10 +79,7 @@ public class EstudianteView extends JFrame {
 
     public EstudianteView() {
 
-        aplicarEstiloSistema();
-
         txtBuscar = new JTextField();
-
         cmbCarrera = new JComboBox<>();
         cmbEstado = new JComboBox<>();
         cmbEstudiante = new JComboBox<>();
@@ -1766,74 +1762,55 @@ public class EstudianteView extends JFrame {
     // CREAR BOTÓN
     // =========================================================
 
-    private JButton boton(
-            String texto,
-            Color color
-    ) {
+private JButton boton(String texto, Color color) {
 
-        JButton boton =
-                new JButton(texto);
+    JButton boton = new JButton(texto);
 
-        boton.setFont(
-                new Font(
-                        "SansSerif",
-                        Font.BOLD,
-                        12
-                )
-        );
+    boton.setFont(
+            new Font(
+                    "SansSerif",
+                    Font.BOLD,
+                    13
+            )
+    );
 
-        // Texto visible según el fondo
-        if (
-                color.equals(NEGRO)
-                || color.equals(ROJO)
-                ) {
+    // Fondo
+    boton.setBackground(color);
 
-            boton.setForeground(
-                    Color.WHITE
-            );
-
-        } else {
-
-            boton.setForeground(
-                    Color.BLACK
-            );
-        }
-
-        boton.setBackground(color);
-
-        // Importante para que el color y texto
-        // se vean correctamente
-        boton.setOpaque(true);
-
-        boton.setContentAreaFilled(true);
-
-        boton.setFocusPainted(false);
-
-        boton.setBorderPainted(true);
-
-        boton.setBorder(
-                BorderFactory.createCompoundBorder(
-                        new LineBorder(
-                                color.darker()
-                        ),
-                        new EmptyBorder(
-                                8,
-                                14,
-                                8,
-                                14
-                        )
-                )
-        );
-
-        boton.setCursor(
-                new Cursor(
-                        Cursor.HAND_CURSOR
-                )
-        );
-
-        return boton;
+    // Texto
+    if (color.equals(DORADO)) {
+        boton.setForeground(Color.BLACK);
+    } else {
+        boton.setForeground(Color.WHITE);
     }
 
+    // Evita que el LookAndFeel cambie el aspecto
+    boton.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+
+    boton.setOpaque(true);
+    boton.setContentAreaFilled(true);
+    boton.setBorderPainted(true);
+    boton.setFocusPainted(false);
+    boton.setRolloverEnabled(false);
+
+    boton.setBorder(
+            BorderFactory.createCompoundBorder(
+                    new LineBorder(color.darker(), 1),
+                    new EmptyBorder(
+                            8,
+                            16,
+                            8,
+                            16
+                    )
+            )
+    );
+
+    boton.setCursor(
+            new Cursor(Cursor.HAND_CURSOR)
+    );
+
+    return boton;
+}
     // =========================================================
     // LABELS
     // =========================================================
