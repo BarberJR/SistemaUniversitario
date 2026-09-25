@@ -17,7 +17,7 @@ public abstract class Persona {
     private String nombre;
     protected int id;
 
-    public Persona(String nombre, String apellido,int id) {
+    public Persona(String nombre, String apellido, int id) {
         this.apellido= apellido;
         this.nombre = nombre;
         this.id = id;
