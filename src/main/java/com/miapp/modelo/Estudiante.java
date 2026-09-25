@@ -1,15 +1,11 @@
 package com.miapp.modelo;
 
-/**
- * Modelo: representa la entidad Estudiante.
- */
-
+import com.miapp.Utilidades.EstadoMatricula;
 import com.miapp.servicios.Inscribible;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Estudiante extends Persona implements Inscribible {
-
 
     private String carrera;
     private double promedio;
@@ -17,19 +13,20 @@ public class Estudiante extends Persona implements Inscribible {
     public static final int MAX_MATERIAS = 7;
 
     private List<Curso> cursos;
+    private EstadoMatricula estadoMatricula;
 
     private static int totalEstudiantes = 0;
     private static int proximoId = 1;
 
     public Estudiante(int id, String nombre, String apellido,
-                      String carrera, double promedio) {
+            String carrera, double promedio) {
 
-        super(nombre,apellido, id);
-        
+        super(nombre, apellido, id);
+
         this.carrera = carrera;
         this.promedio = promedio;
-
         this.cursos = new ArrayList<>();
+        this.estadoMatricula = EstadoMatricula.ACTIVO;
 
         totalEstudiantes++;
 
@@ -37,7 +34,6 @@ public class Estudiante extends Persona implements Inscribible {
             proximoId = id + 1;
         }
     }
-
 
     public String getCarrera() {
         return carrera;
@@ -59,6 +55,16 @@ public class Estudiante extends Persona implements Inscribible {
         return cursos;
     }
 
+    public EstadoMatricula getEstadoMatricula() {
+        return estadoMatricula;
+    }
+
+    public void setEstadoMatricula(EstadoMatricula estadoMatricula) {
+        if (estadoMatricula != null) {
+            this.estadoMatricula = estadoMatricula;
+        }
+    }
+
     @Override
     public boolean inscribir(Curso curso) {
 
@@ -76,6 +82,19 @@ public class Estudiante extends Persona implements Inscribible {
 
         cursos.add(curso);
         curso.agregarEstudiante(this);
+
+        return true;
+    }
+
+    // Esta es la función que tú querías conservar
+    public boolean retirarCurso(Curso curso) {
+
+        if (curso == null || !cursos.contains(curso)) {
+            return false;
+        }
+
+        cursos.remove(curso);
+        curso.quitarEstudiante(this);
 
         return true;
     }

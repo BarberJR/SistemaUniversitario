@@ -10,8 +10,21 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
-
+/**
+ * Vista Swing del sistema. Solo se ocupa de mostrar información y capturar
+ * acciones del usuario; las operaciones las coordina el controlador.
+ */
 public class EstudianteView extends JFrame {
+
+    private static final Color AZUL = new Color(30, 64, 175);
+    private static final Color AZUL_CLARO = new Color(239, 246, 255);
+    private static final Color FONDO = new Color(245, 247, 250);
+    private static final Color BLANCO = Color.WHITE;
+    private static final Color TEXTO = new Color(31, 41, 55);
+    private static final Color SECUNDARIO = new Color(107, 114, 128);
+    private static final Color VERDE = new Color(22, 163, 74);
+    private static final Color NARANJA = new Color(234, 88, 12);
+    private static final Color ROJO = new Color(220, 38, 38);
 
     private final JTextField txtBuscar;
     private final JComboBox<String> cmbCarrera;
@@ -37,21 +50,7 @@ public class EstudianteView extends JFrame {
     private final JLabel lblTotalCursos;
     private final JLabel lblTotalProfesores;
     private final JLabel lblEstado;
-
-  
-    private static final Color AZUL = new Color(30, 64, 175);
-    private static final Color AZUL_CLARO = new Color(239, 246, 255);
-    private static final Color FONDO = new Color(245, 247, 250);
-    private static final Color BLANCO = Color.WHITE;
-    private static final Color TEXTO = new Color(31, 41, 55);
-    private static final Color SECUNDARIO = new Color(107, 114, 128);
-    private static final Color VERDE = new Color(22, 163, 74);
-    private static final Color NARANJA = new Color(234, 88, 12);
-    private static final Color ROJO = new Color(220, 38, 38);
-
-  
-
-   private EstudianteController controlador;
+    private EstudianteController controlador;
 
     public EstudianteView() {
         aplicarEstiloSistema();
