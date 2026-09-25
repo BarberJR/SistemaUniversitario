@@ -15,11 +15,11 @@ public class Profesor extends Persona {
 
     private final double salarioBase;
 
-    public Profesor(String nombre, int id, double salarioBase) {
-        super(nombre id);
+      public Profesor(String nombre,String apellido, int id, double salarioBase) {
+        super(nombre,apellido, id);
         this.salarioBase = salarioBase;
     }
-
+      
     public double getSalarioBase() {
         return salarioBase;
     }
